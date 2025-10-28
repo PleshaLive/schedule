@@ -125,11 +125,18 @@
     backdrop-filter: blur(10px);
   }
 
+  .today-compact {
+    padding: 0.6rem 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    font-size: 0.7rem;
+  }
+
   .btn-outline:hover {
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 0, 0.98);
+    background: rgba(255, 245, 0, 0.22);
+    color: #111111;
+    box-shadow: 0 0 38px rgba(255, 250, 0, 0.58);
   }
 
   /* Badge System */
@@ -149,9 +156,9 @@
   }
 
   .badge-primary {
-    background: rgba(102, 126, 234, 0.15);
-    border-color: rgba(102, 126, 234, 0.3);
-    color: #a5b4fc;
+    background: rgba(234, 232, 102, 0.15);
+    border-color: rgba(234, 232, 102, 0.3);
+    color: #fffb00;
   }
 
   .badge-success {
@@ -172,14 +179,14 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: rgba(148, 163, 184, 0.7);
+    color: rgba(254, 255, 218, 0.7);
     margin-bottom: 0.5rem;
   }
 
   /* Scrollbar */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+    scrollbar-color: rgba(251, 255, 0, 0.3) transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -216,10 +223,10 @@
   }
 
   .calendar-day:hover {
-    border-color: rgba(255, 255, 255, 0.2);
-    background: linear-gradient(135deg, rgba(20, 20, 20, 0.3) 0%, rgba(0, 0, 0, 0.4) 100%);
+    border-color: rgba(255, 250, 0, 0.78);
+    background: linear-gradient(135deg, rgba(86, 64, 0, 0.5) 0%, rgba(28, 20, 0, 0.68) 100%);
     transform: scale(1.02);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 38px rgba(255, 245, 0, 0.38);
   }
 
   .calendar-day.selected {

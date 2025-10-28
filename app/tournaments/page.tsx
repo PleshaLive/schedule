@@ -132,7 +132,7 @@ export default async function TournamentsPage() {
         <header className="glass-panel px-6 py-7">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div className="space-y-3">
-              <p className="text-label">Fixture Fusion</p>
+              <p className="text-label">PARTNERS</p>
               <div className="space-y-2">
                 <h1 className="text-3xl font-semibold text-white/90 sm:text-[2.5rem] sm:leading-[1.1]">
                   Турнирный срез по дисциплинам

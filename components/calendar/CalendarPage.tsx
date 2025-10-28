@@ -16,7 +16,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import { ru } from "date-fns/locale";
+import { enUS, ru, uk } from "date-fns/locale";
 import clsx from "clsx";
 import { utcToZonedTime } from "date-fns-tz";
 
@@ -48,7 +48,7 @@ const STREAM_META: Record<CalendarSource, { label: string; short: string; accent
   LEEDS_UNITED: {
     label: "Leeds United",
     short: "LUFC",
-    accent: "#F8FF13",
+    accent: "#3B82F6",
   },
   LEGACY_CS2: {
     label: "Legacy CS2",
@@ -120,6 +120,14 @@ export function CalendarPage({ events, initialMonth }: CalendarPageProps) {
   const filteredEvents = useMemo(
     () => enhancedEvents.filter((event) => activeStreams.includes(event.source)),
     [enhancedEvents, activeStreams],
+  );
+
+  const monthlyEvents = useMemo(
+    () =>
+      filteredEvents.filter((event) =>
+        isSameMonth(parseISO(event.localDateKey), currentMonth),
+      ),
+    [filteredEvents, currentMonth],
   );
 
   useEffect(() => {
@@ -207,12 +215,12 @@ export function CalendarPage({ events, initialMonth }: CalendarPageProps) {
     setPendingScrollKey(key);
   };
 
-  const totalEvents = filteredEvents.length;
-  const clubEvents = filteredEvents.filter(
+  const totalEvents = monthlyEvents.length;
+  const clubEvents = monthlyEvents.filter(
     (event) => event.source === "MANCHESTER_UNITED" || event.source === "LEEDS_UNITED",
   ).length;
-  const legacyEvents = filteredEvents.filter((event) => event.source === "LEGACY_CS2").length;
-  const ufcEvents = filteredEvents.filter((event) => event.source === "UFC").length;
+  const legacyEvents = monthlyEvents.filter((event) => event.source === "LEGACY_CS2").length;
+  const ufcEvents = monthlyEvents.filter((event) => event.source === "UFC").length;
 
   const nextEvents = useMemo(() => {
     const now = Date.now();
@@ -234,36 +242,25 @@ export function CalendarPage({ events, initialMonth }: CalendarPageProps) {
   }, [selectedDayKey, eventsByDay]);
 
   const selectedDayLabel = selectedDayKey ? formatDateKeyLabel(selectedDayKey) : "Выберите день";
-  const monthLabelPrimary = capitalizeLabel(
-    format(currentMonth, "LLLL yyyy", { locale: ru }),
-  );
+  const currentYearLabel = format(currentMonth, "yyyy");
+  const monthLabelUk = capitalizeLabel(format(currentMonth, "LLLL", { locale: uk }));
+  const monthLabelRu = capitalizeLabel(format(currentMonth, "LLLL", { locale: ru }));
+  const monthLabelEn = capitalizeLabel(format(currentMonth, "LLLL", { locale: enUS }));
 
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-50 border-b border-neutral-800/50 bg-black/90 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
+        <div className="mx-auto w-full max-w-[1600px] px-6 py-4 sm:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center bg-gradient-to-br from-gray-900 to-black shadow-lg shadow-black/50">
-                <span className="text-xl font-bold text-white">FF</span>
+            <div className="space-y-1">
+              <div className="text-[0.65rem] font-bold uppercase tracking-[0.35em] text-yellow-400">
+                Partners
               </div>
-              <div>
-                <div className="label mb-1">Fixture Fusion</div>
-                <h1 className="text-lg font-bold text-slate-100 sm:text-xl">
-                  Календарь событий
-                </h1>
-              </div>
+              <h1 className="text-xl font-extrabold uppercase tracking-[0.3em] text-slate-100 sm:text-2xl">
+                Partners Schedule
+              </h1>
             </div>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={handleJumpToToday}
-                className="btn-gradient"
-              >
-                Сегодня
-              </button>
-              <span className="label hidden sm:block">Europe/Kyiv</span>
-            </div>
+            <div className="flex items-center gap-3"></div>
           </div>
           <nav className="custom-scrollbar mt-4 flex gap-2 overflow-x-auto pb-2">
             {STREAM_ORDER.map((stream) => {
@@ -288,7 +285,7 @@ export function CalendarPage({ events, initialMonth }: CalendarPageProps) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+  <main className="mx-auto w-full max-w-[1600px] px-6 py-8 sm:px-8">
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <section className="space-y-6">
             <div className="neo-card">
@@ -305,8 +302,11 @@ export function CalendarPage({ events, initialMonth }: CalendarPageProps) {
                   <div>
                     <div className="label">Текущий месяц</div>
                     <h2 className="text-xl font-bold text-slate-100">
-                      {monthLabelPrimary}
+                      {monthLabelUk} / {monthLabelRu} / {monthLabelEn}
                     </h2>
+                    <div className="mt-1 text-sm font-semibold uppercase tracking-wide text-neutral-500">
+                      {currentYearLabel}
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -316,21 +316,32 @@ export function CalendarPage({ events, initialMonth }: CalendarPageProps) {
                   >
                     →
                   </button>
+                  <button
+                    type="button"
+                    onClick={handleJumpToToday}
+                    className="btn-outline today-compact"
+                  >
+                    Сегодня
+                  </button>
                 </div>
-                <Link href="/tournaments" className="btn-outline">
-                  Все турниры →
-                </Link>
               </div>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {[
-                  { label: "Всего событий", value: totalEvents },
+                  { label: "Всего событий (месяц)", value: totalEvents },
                   { label: "Клубные", value: clubEvents },
                   { label: "Legacy CS2", value: legacyEvents },
                   { label: "UFC", value: ufcEvents },
                 ].map((item) => (
-                  <div key={item.label} className="border border-neutral-800/50 bg-black/60 p-4 backdrop-blur-sm">
-                    <div className="label mb-1">{item.label}</div>
-                    <div className="text-2xl font-bold text-slate-100">{item.value}</div>
+                  <div
+                    key={item.label}
+                    className="border border-neutral-800/60 bg-black/70 px-3 py-2 text-left shadow-[0_0_20px_rgba(0,0,0,0.35)]"
+                  >
+                    <div className="text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-neutral-400">
+                      {item.label}
+                    </div>
+                    <div className="mt-1 text-xl font-semibold text-white leading-tight">
+                      {item.value}
+                    </div>
                   </div>
                 ))}
               </div>
